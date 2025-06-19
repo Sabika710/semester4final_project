@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Service</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- jQuery and jQuery UI for draggable -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+</head>
+<body>
+<div class="chat-container" id="chatbot">
+    <div class="chat-header">Customer Service</div>
+    <div class="chat-box" id="chat-box"></div>
+    <div class="chat-input-area">
+        <input type="text" id="user-input" placeholder="Type your message..." autofocus>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+<script>
+function appendMessage(sender, text) {
+    const chatBox = document.getElementById('chat-box');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender;
+    msgDiv.innerText = text;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendMessage() {
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    if (!message) return;
+    appendMessage('user', message);
+    input.value = '';
+    fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: message})
+    })
+    .then(response => response.json())
+    .then(data => appendMessage('bot', data.response));
+}
+
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
+</script>
+<script>
+    $(function() {
+      $("#chatbot").draggable({
+        containment: "window" // Prevents dragging outside the viewport
+      });
+    });
+</script>
+<!-- jQuery and jQuery UI for draggable -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+  $(function() {
+    $("#chatbot").draggable({
+      containment: "window" // Keeps it inside the browser window
+    });
+  });
+</script>
+
+  
+</body>
+</html>
